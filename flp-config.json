@@ -1,0 +1,35 @@
+{
+    "application": {
+        "id": "",
+        "title": "com.epam.uiorders",
+        "description": "Orders for SAP Coder 2018",
+        "type": "SAP_UI5_Component",
+        "componentUrl": "/",
+        "appUrl": "#uiorders-Display",
+        "navigationComponentName": "com.epam.uiorders",
+        "intentSemanticObject": "uiorders",
+        "intentAction": "Display",
+        "html5ApplicationName": "uiorders",
+        "HCPParentApplicationName": ""
+    },
+    "assignment": {
+        "groups": [
+            "2cf4960d-15ff-456a-8db1-372dfe9d905e"
+        ],
+        "contentPackages": [
+            "8a24ace5-10d1-4e98-bdd9-a4cae1d5127e"
+        ],
+        "categories": []
+    },
+    "tile": {
+        "type": "StaticTile",
+        "title": "Заказы",
+        "subtitle": "Карта с заказами",
+        "searchKeywords": "Заказы,Карта с заказами",
+        "displayIconUrl": "sap-icon://map-2",
+        "displayInfoText": "",
+        "size": "1x1",
+        "serviceURL": "",
+        "refreshInterval": ""
+    }
+}

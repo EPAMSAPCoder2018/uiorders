@@ -14,16 +14,21 @@
 					</OverflowToolbar>
 				</subHeader>
 				<content>
-					<vbm:GeoMap id="vbi" width="100%" height="100%" initialZoom="12" initialPosition="27.554899;53.904651"
-						vos="{path:'mapData>/results', factory:'.vosFactoryFunction'}" zoomChanged="onZoomChanged">
+					<vbm:GeoMap id="vbi" width="100%" height="100%" initialZoom="12" initialPosition="71.428028;51.134140"
+						vos="{path:'mapData>/results', factory:'.vosFactoryFunction'}" zoomChanged="onZoomChanged"
+						legendVisible="{technicalModel>/legendVisible}"
+						rectangularSelection="{technicalModel>/selectionEnabled}" select="onVosElementsSelect">
 						<vbm:legend>
-							<vbm:Legend caption="{i18n>orders.title}" items="{ path: 'mapData>/results', factory: '.legendFactoryFunction'}"></vbm:Legend>
+							<!--<vbm:Legend caption="{i18n>orders.title}" items="{ path: 'mapData>/results', factory: '.legendFactoryFunction'}"></vbm:Legend>-->
+							<vbm:Legend caption="{i18n>Legend}" items="{ path: 'technicalModel>/legend', factory: '.legendFactoryFunction'}"></vbm:Legend>
 						</vbm:legend>
 					</vbm:GeoMap>
 				</content>
 				<footer>
 					<Toolbar>
 						<ToolbarSpacer/>
+						<ToggleButton text="{i18n>Selection}" pressed="{technicalModel>/selectionEnabled}"/>
+						<ToggleButton text="{i18n>Legend}" pressed="{technicalModel>/legendVisible}"/>
 					</Toolbar>
 				</footer>
 			</Page>

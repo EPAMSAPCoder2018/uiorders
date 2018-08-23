@@ -16,15 +16,33 @@ sap.ui.define([
 		"technicalModel": Models.createEmptyJSONModel()
 	};
 	MODELS.technicalModel.setProperty("/lineWidth", 6);
+	MODELS.technicalModel.setProperty("/selectionEnabled", false);
+	MODELS.technicalModel.setProperty("/legendVisible", false);
+
 	return BaseController.extend("com.epam.uiorders.controller.routes", {
 		onInit: function () {
 			this.MODELS = MODELS;
+			var component = this.getOwnerComponent();
+			var i18n = component.getModel("i18n");
+			MODELS.technicalModel.setProperty("/legend", [{
+				color: "rgb(0,255,0)",
+				state: "Success",
+				description: i18n.getProperty("order.status.D")
+			},{
+				color: "rgb(240,255,0)",
+				state: "Warning",
+				description: i18n.getProperty("order.status.I")
+			}, {
+				color: "rgb(152,152,152)",
+				state: "Inactive",
+				description: i18n.getProperty("order.status.P")
+			}]);
 			BaseController.prototype.onInit.apply(this, arguments);
 			this._mapDataLoadingTask = this.createPeriodicalyTask(function () {
 				$.ajax({
 					type: "GET",
 					url: "/services/getOrders.xsjs",
-					async: false,
+					async: true,
 					success: function (data, textStatus, jqXHR) {
 						data.results.forEach(function (order, i) {
 							order.index = i + 1;
@@ -36,15 +54,15 @@ sap.ui.define([
 						console.log("error to post " + textStatus, jqXHR, data);
 					}
 				});
-			}, 1000);
+			}, 20000);
 		},
-		
-		onExit : function(){
-			this._mapDataLoadingTask.stop();	
+
+		onExit: function () {
+			this._mapDataLoadingTask.stop();
 		},
-		
-		onAfterRendering : function(){
-			this._mapDataLoadingTask.start();	
+
+		onAfterRendering: function () {
+			this._mapDataLoadingTask.start();
 		},
 
 		onClickRoute: function (evt) {
@@ -61,14 +79,11 @@ sap.ui.define([
 					"orderId": order.id
 				}
 			});
-			this._mapDataLoadingTask.stop();
 		},
 
 		onLegendItemClick: function (evt) {
-			var oMap = this.getMapControl();
 			var context = evt.getSource().getBindingContext("mapData");
 			var data = context.getProperty();
-			var pos = null;
 			var colorPath = context.getPath() + "/color";
 			var color = data.color;
 			var colorHighlighter = function (counter, enableHighlighting) {
@@ -83,7 +98,7 @@ sap.ui.define([
 						colorHighlighter(counter, !enableHighlighting);
 					}, 600);
 				}
-			}
+			};
 			colorHighlighter(0, true);
 		},
 
@@ -138,16 +153,43 @@ sap.ui.define([
 			return routes;
 		},
 
-		legendFactoryFunction: function (sId, oContext) {
-			var currentObject = oContext.getProperty();
-			var that = this;
-			var item = new sap.ui.vbm.LegendItem(sId, {
-				text: "{= ${i18n>order.title} + ' ' + ${mapData>id} + ': ' + ${mapData>description} }",
-				color: "{mapData>color}",
-				click: [this.onLegendItemClick, this]
-			});
+		// legendFactoryFunction: function (sId, oContext) {
+		// 	var currentObject = oContext.getProperty();
+		// 	var that = this;
+		// 	var item = new sap.ui.vbm.LegendItem(sId, {
+		// 		text: "{= ${i18n>order.title} + ' ' + ${mapData>id} + ': ' + ${mapData>description} }",
+		// 		color: "{mapData>color}",
+		// 		click: [this.onLegendItemClick, this]
+		// 	});
 
-			return item;
+		// 	return item;
+		// },
+		
+		legendFactoryFunction: function (sId, oContext) {
+			return new sap.ui.vbm.LegendItem(sId, {
+				text: "{technicalModel>description}",
+				color: "{technicalModel>color}"
+			});
+		},
+
+		onVosElementsSelect: function (evt) {
+			var selected = evt.getParameter("selected");
+			var ids = selected.map(function (route) {
+				var context = route.getBindingContext("mapData");
+				return context.getProperty("id");
+			});
+			console.log(ids);
+			var fgetService = sap.ushell && sap.ushell.Container && sap.ushell.Container.getService;
+			var oCrossAppNavigator = fgetService && fgetService("CrossApplicationNavigation");
+			oCrossAppNavigator.toExternal({
+				target: {
+					semanticObject: "uiordersdetails",
+					action: "Display"
+				},
+				params: {
+					"orderId": ids
+				}
+			});
 		}
 	});
 });
